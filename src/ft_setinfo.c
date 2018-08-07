@@ -25,8 +25,13 @@ void	ft_setpos(t_player *player)
 		{
 			if (player->fild.data[i][j] == player->my)
 			{
-				player->fild.start[0] = i;
-				player->fild.start[1] = j;
+				player->fild.startP[0] = i;
+				player->fild.startP[1] = j;
+			}
+			if (player->fild.data[i][j] == player->en)
+			{
+				player->fild.startE[0] = i;
+				player->fild.startE[1] = j;
 			}
 			j++;
 		}
@@ -39,30 +44,22 @@ void	ft_parse_figpX(t_piece *piece)
 {
 	int	i;
 	int j;
-	int cur;
 
 	i = -1;
-	piece->figp[0] = 1000;
-	while (++i < piece->size[0])
+	piece->figp[0] = -1;
+	while (++i < piece->size[1])
 	{
-		j = 0;
-		while (piece->data[i][j] != '\0')
+		j = -1;
+		while (++j < piece->size[0])
 		{
-			if (piece->data[i][j] == '*')
+			if (piece->data[j][i] == '*')
 			{
-				cur = j;
+				piece->figp[0] = i;
 				break ;
 			}
-			j++;
 		}
-		// if (piece->data[i][j + 1] == '\0' && cur == 0)
-		// 	break ; 
-		if (piece->figp[0] > cur)
-		{
-			piece->figp[0] = cur;
-			cur = 0;
-		}	
-		
+		if (piece->figp[0] != -1)
+			break ; 
 	}
 }
 

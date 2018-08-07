@@ -21,7 +21,8 @@ typedef struct 		s_fild
 {
 	short			init;
 	int				*size;
-	int				start[2];
+	int				startP[2];
+	int				startE[2];
 	char			**data;
 }					t_fild;
 

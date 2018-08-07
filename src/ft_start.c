@@ -86,7 +86,7 @@ void	ft_FillLoop(t_player *player)
 		}
 		if (!ft_strncmp(tetr, "Piece ", 6))
 		{
-			printf("check startX = |%d| startY = |%d|\n", player->fild.start[0], player->fild.start[1]);
+			printf("check startX = |%d| startY = |%d|\n", player->fild.startP[0], player->fild.startP[1]);
 			ft_readpiece(tetr, &player->piece, 6);
 			printf("check piece posX = |%d|  posY |%d|\n", player->piece.figp[0], player->piece.figp[1]);
 			//ft_start(player);
