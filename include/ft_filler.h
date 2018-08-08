@@ -17,10 +17,16 @@
 # include <stdio.h>
 # include <stdlib.h>
 
+typedef	struct		s_point
+{
+	int				x;
+	int				y;
+}					t_point;
+
 typedef struct 		s_fild	
 {
 	short			init;
-	int				*size;
+	t_point			size;
 	int				startP[2];
 	int				startE[2];
 	char			**data;
@@ -28,7 +34,9 @@ typedef struct 		s_fild
 
 typedef struct		s_piece 
 {
-	int				*size;
+	t_point			size;
+	int				fig1[2];
+	int				fig2[2];
 	int				figp[2];
 	int				figwh[2];
 	char			**data;
@@ -40,10 +48,12 @@ typedef struct		s_player
 	char			en;
 	t_fild			fild;
 	t_piece			piece;
+	int				lastdot[2];
 }					t_player;
 
 void				ft_setpos(t_player *player);
 void				ft_parse_figpX(t_piece *piece);
 void				ft_parse_figpY(t_piece *piece);
+void				ft_start(t_player *player);
 
 #endif

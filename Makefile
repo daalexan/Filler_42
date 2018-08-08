@@ -23,7 +23,8 @@ CC = gcc
 
 LIB_FILES = ./include/libft/
 FILLER_FILES =  src/ft_start.c \
-				src/ft_setinfo.c
+				src/ft_setinfo.c \
+				src/ft_game.c
 				
 OBJ = $(FILLER_FILES:.c=.o)
 

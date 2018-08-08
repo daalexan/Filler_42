@@ -12,12 +12,12 @@
 
 #include "ft_filler.h"
 
-int		*ft_checksize(char *tetr, int ofset)
+t_point		ft_checksize(char *tetr, int ofset)
 {
-	static int	size[2];
+	t_point		point;
 	char		arr[5];
 	int			i;
-	int 		j;
+	int			j;
 
 	j = 0;
 	i = 0;
@@ -31,14 +31,14 @@ int		*ft_checksize(char *tetr, int ofset)
 		}
 		else if (*tetr == ' ')
 		{
-			size[i] = ft_atoi(arr);
+			point.x = ft_atoi(arr);
 			i++;
-			j = 0; 
+			j = 0;
 		}
 		tetr++;
 	}
-	size[i] = ft_atoi(arr);
-	return (size);
+	point.y = ft_atoi(arr);
+	return (point);
 }
 
 void	ft_readfild(char *tetr, t_fild *fild, int ofset)
@@ -48,9 +48,9 @@ void	ft_readfild(char *tetr, t_fild *fild, int ofset)
 
 	i = -1;
 	fild->size = ft_checksize(tetr, ofset);
-	fild->data = (char**)malloc((fild->size[0]) * sizeof(char*));
+	fild->data = (char**)malloc((fild->size.x) * sizeof(char*));
 	get_next_line(0, &str);
-	while (++i < fild->size[0] && get_next_line(0, &str) > -1)
+	while (++i < fild->size.x && get_next_line(0, &str) > -1)
 		fild->data[i] = str + 4;
 	ft_strdel(&str);
 }
@@ -62,12 +62,25 @@ void	ft_readpiece(char *tetr, t_piece *piece, int ofset)
 
 	i = -1;
 	piece->size = ft_checksize(tetr, ofset);
-	piece->data = (char**)malloc((piece->size[0]) *sizeof(char*));
-	while (++i < piece->size[0] && get_next_line(0, &str) > -1)
+	piece->data = (char**)malloc((piece->size.x) * sizeof(char*));
+	while (++i < piece->size.x && get_next_line(0, &str) > -1)
 		piece->data[i] = str;
 	ft_strdel(&str);
 	ft_parse_figpX(piece);
 	ft_parse_figpY(piece);
+	if (piece->fig1[0] == piece->fig2[0] &&
+		piece->fig1[1] == piece->fig2[1])
+	{
+		piece->figp[0] = piece->fig1[0];
+		piece->figp[1] = piece->fig1[1];
+	}
+	else
+	{
+		piece->figp[0] = piece->fig2[0] - piece->fig1[1];
+		piece->figp[1] = piece->fig2[1] - piece->fig1[0];
+		piece->figp[0] = (piece->figp[0] >= 0) ? (piece->figp[0]) : (0);
+		piece->figp[0] = (piece->figp[0] >= 0) ? (piece->figp[0]) : (0);
+	}
 }
 
 void	ft_FillLoop(t_player *player)
@@ -86,16 +99,16 @@ void	ft_FillLoop(t_player *player)
 		}
 		if (!ft_strncmp(tetr, "Piece ", 6))
 		{
-			printf("check startX = |%d| startY = |%d|\n", player->fild.startP[0], player->fild.startP[1]);
+			printf("SIZE 1 x = %d y = %d\n", player->fild.size.x, player->fild.size.y);
 			ft_readpiece(tetr, &player->piece, 6);
-			printf("check piece posX = |%d|  posY |%d|\n", player->piece.figp[0], player->piece.figp[1]);
-			//ft_start(player);
+			printf("SIZE 2 x = %d y = %d\n", player->fild.size.x, player->fild.size.y);
+			ft_start(player);
 		}
 		ft_strdel(&tetr);
 	}
 }
 
-int main()
+int		main(void)
 {
 	t_player	player;
 	char		*piece;
@@ -104,7 +117,8 @@ int main()
 	piece = NULL;
 	while (1)
 	{
-		if (get_next_line(0, &piece) && piece && !ft_strncmp(piece, "$$$ exec p", 9) &&
+		if (get_next_line(0, &piece) && piece &&
+			!ft_strncmp(piece, "$$$ exec p", 9) &&
 			(piece[10] == '1' || piece[10] == '2'))
 		{
 			player.my = (piece[10] == '1') ? 'O' : 'X';
