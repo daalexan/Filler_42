@@ -41,7 +41,7 @@ t_point		ft_checksize(char *tetr, int ofset)
 	return (point);
 }
 
-void	ft_readfild(char *tetr, t_fild *fild, int ofset)
+void		ft_readfild(char *tetr, t_fild *fild, int ofset)
 {
 	char	*str;
 	int		i;
@@ -55,7 +55,7 @@ void	ft_readfild(char *tetr, t_fild *fild, int ofset)
 	ft_strdel(&str);
 }
 
-void	ft_readpiece(char *tetr, t_piece *piece, int ofset)
+void		ft_readpiece(char *tetr, t_piece *piece, int ofset)
 {
 	char	*str;
 	int		i;
@@ -68,26 +68,14 @@ void	ft_readpiece(char *tetr, t_piece *piece, int ofset)
 	ft_strdel(&str);
 	ft_parse_figpX(piece);
 	ft_parse_figpY(piece);
-	if (piece->fig1[0] == piece->fig2[0] &&
-		piece->fig1[1] == piece->fig2[1])
-	{
-		piece->figp[0] = piece->fig1[0];
-		piece->figp[1] = piece->fig1[1];
-	}
-	else
-	{
-		piece->figp[0] = piece->fig2[0] - piece->fig1[1];
-		piece->figp[1] = piece->fig2[1] - piece->fig1[0];
-		piece->figp[0] = (piece->figp[0] >= 0) ? (piece->figp[0]) : (0);
-		piece->figp[0] = (piece->figp[0] >= 0) ? (piece->figp[0]) : (0);
-	}
 }
 
-void	ft_FillLoop(t_player *player)
+int			ft_fill_loop(t_player *player)
 {
 	char	*tetr;
+	int		res;
 
-	while (get_next_line(0, &tetr) > -1)
+	while ((res = get_next_line(0, &tetr)) > -1)
 	{
 		if (!tetr)
 			continue;
@@ -95,20 +83,22 @@ void	ft_FillLoop(t_player *player)
 		{
 			ft_readfild(tetr, &player->fild, 8);
 			if (!(player->fild.init))
+			{
 				ft_setpos(player);
+				ft_find_way(player);
+			}
 		}
 		if (!ft_strncmp(tetr, "Piece ", 6))
 		{
-			printf("SIZE 1 x = %d y = %d\n", player->fild.size.x, player->fild.size.y);
 			ft_readpiece(tetr, &player->piece, 6);
-			printf("SIZE 2 x = %d y = %d\n", player->fild.size.x, player->fild.size.y);
 			ft_start(player);
 		}
 		ft_strdel(&tetr);
 	}
+	return (res);
 }
 
-int		main(void)
+int			main(void)
 {
 	t_player	player;
 	char		*piece;
@@ -122,11 +112,11 @@ int		main(void)
 			(piece[10] == '1' || piece[10] == '2'))
 		{
 			player.my = (piece[10] == '1') ? 'O' : 'X';
-			player.en = (piece[10] == '2') ? 'O' : 'X';
+			player.en = (piece[10] == '1') ? 'X' : 'O';
 			break ;
 		}
 	}
 	ft_strdel(&piece);
-	ft_FillLoop(&player);
+	ft_fill_loop(&player);
 	return (0);
 }

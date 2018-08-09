@@ -87,13 +87,13 @@ void	ft_parse_figwhY(t_piece *piece)
 	}
 }
 
-void	ft_parse_figpX(t_piece *piece)
+void	ft_parse_figpY(t_piece *piece)
 {
 	int	i;
 	int	j;
 
 	i = -1;
-	piece->fig1[0] = -1;
+	piece->figp[1] = -1;
 	while (++i < piece->size.y)
 	{
 		j = -1;
@@ -101,24 +101,23 @@ void	ft_parse_figpX(t_piece *piece)
 		{
 			if (piece->data[j][i] == '*')
 			{
-				piece->fig1[0] = j;
-				piece->fig1[1] = i;
+				piece->figp[1] = i;
 				break ;
 			}
 		}
-		if (piece->fig1[0] != -1)
+		if (piece->figp[1] != -1)
 			break ; 
 	}
 	ft_parse_figwhX(piece);
 }
 
-void	ft_parse_figpY(t_piece *piece)
+void	ft_parse_figpX(t_piece *piece)
 {
 	int	i;
 	int	j;
 
 	i = -1;
-	piece->fig2[1] = -1;
+	piece->figp[0] = -1;
 	while (++i < piece->size.x)
 	{
 		j = 0;
@@ -126,13 +125,12 @@ void	ft_parse_figpY(t_piece *piece)
 		{
 			if (piece->data[i][j] == '*')
 			{
-				piece->fig2[1] = j;
-				piece->fig2[0] = i;
+				piece->figp[0] = i;
 				break ;
 			}
 			j++;
 		}
-		if (piece->fig2[1] != -1)
+		if (piece->figp[0] != -1)
 			break ; 
 	}
 	ft_parse_figwhY(piece);

@@ -35,8 +35,6 @@ typedef struct 		s_fild
 typedef struct		s_piece 
 {
 	t_point			size;
-	int				fig1[2];
-	int				fig2[2];
 	int				figp[2];
 	int				figwh[2];
 	char			**data;
@@ -55,5 +53,8 @@ void				ft_setpos(t_player *player);
 void				ft_parse_figpX(t_piece *piece);
 void				ft_parse_figpY(t_piece *piece);
 void				ft_start(t_player *player);
+void				ft_setpiece(t_player *player, int x, int y);
+void				ft_frst_check(t_player *player, int x, int y, int *con);
+void				ft_find_way(t_player *player);
 
 #endif
