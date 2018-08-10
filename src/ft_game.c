@@ -12,42 +12,64 @@
 
 #include "ft_filler.h"
 
-void	try_pos(t_player *player, int *x, int *y)
+int		loopy(t_player *p, int p1, int p2, int on)
 {
-	(void)player;
-	(*x)--;
-	(*y)--;
-	//create this algorithm
+	printf("loopY p1 = %d p2 = %d on = %d\n", p1, p2, on);
+	while (p1 <= p2)
+	{
+		printf("points (%d)\n", p1);
+		if (ft_valid(p, on, p1))
+		{
+			p->move.x = on;
+			p->move.y = p1;
+			return (1);
+		}
+		p1++;
+	}
+	return (0);
 }
 
-int	ft_valid(t_player *player, int x, int y)
+int		loopx(t_player *p, int p1, int p2, int on)
 {
-	int	i;
-	int	j;
-	int con;
-
-	con = 0;
-	i = player->piece.figp[0] - 1;
-	while (++i < player->piece.size.x && con <= 1)
+	printf("loopX p1 = %d p2 = %d on = %d\n", p1, p2, on);
+	while (p1 <= p2)
 	{
-		j = player->piece.figp[1] - 1;
-		y = player->fild.startP[1];
-		while (++j < player->piece.size.y)
+		printf("points (%d)\n", p1);
+		if (ft_valid(p, p1, on))
 		{
-			if ((x >= player->fild.size.x || y >= player->fild.size.y) &&
-				player->piece.data[i][j] == '*')
-				con++;
-			ft_frst_check(player, x, y, &con);
-			printf("(%c (%d,%d), %c (%d,%d))\n", player->fild.data[x][y], x, y, player->piece.data[i][j], i, j);
-			if ((player->fild.data[x][y] == 'X' || player->fild.data[x][y] == 'x' ||
-				player->fild.data[x][y] == 'O' || player->fild.data[x][y] == 'o') &&
-				(player->piece.data[i][j] == '*'))
-				con++;
-			y++;
+			p->move.x = p1;
+			p->move.y = on;
+			return (1);
 		}
-		x++;
+		p1++;
 	}
-	return ((con == 1) ? (1) : (0));
+	return (0);
+}
+
+void	try_pos(t_player *p, int *x, int *y)
+{
+	while (p->move.x >= 0 && p->move.y >= 0 &&
+		p->move.x < p->fild.size.x && p->move.y < p->fild.size.y)
+	{
+		ft_find_way(p, p->move.size);
+		printf("FIRST\n");
+		if (loopy(p, p->move.y, p->move.y1, p->move.x))
+			break ;
+		printf("Second\n");
+		if (loopy(p, p->move.y, p->move.y1, p->move.x1))
+			break ;
+		printf("Third\n");
+		if (loopx(p, p->move.x, p->move.x1, p->move.y))
+			break ;
+		printf("fourth\n");
+		if (loopx(p, p->move.x, p->move.x1, p->move.y1))
+			break ;
+		printf("fifth\n");
+		p->move.size++;
+	}
+	(*x) = p->move.x;
+	(*y) = p->move.y;
+	printf("X = %d Y = %d StartX = %d StartY = %d\n", *x, *y, p->fild.startP[0], p->fild.startP[1]);
 }
 
 void	ft_start(t_player *player)
@@ -57,12 +79,9 @@ void	ft_start(t_player *player)
 
 	x = player->fild.startP[0];
 	y = player->fild.startP[1];
-	printf("pos1 = x=%d y=%d\n", x, y);
-	printf("figp x = %d y = %d\n", player->piece.figp[0],player->piece.figp[1]);
-	while (!ft_valid(player, x, y))
-	{
-		try_pos(player, &x, &y);
-	}
-	printf("Loop end\n");
+	//printf("pos1 = x=%d y=%d\n", x, y);
+	//printf("figp x = %d y = %d\n", player->piece.figp[0],player->piece.figp[1]);
+	try_pos(player, &x, &y);
+	//printf("Loop end\n");
 	ft_setpiece(player, x, y);
 }

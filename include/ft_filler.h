@@ -17,6 +17,15 @@
 # include <stdio.h>
 # include <stdlib.h>
 
+typedef	struct		s_move
+{
+	int				size;
+	int				x;
+	int				y;
+	int				x1;
+	int				y1;
+}					t_move;
+
 typedef	struct		s_point
 {
 	int				x;
@@ -42,11 +51,12 @@ typedef struct		s_piece
 
 typedef struct		s_player
 {
+	int				stop;
 	char			my;
 	char			en;
 	t_fild			fild;
 	t_piece			piece;
-	int				lastdot[2];
+	t_move			move;
 }					t_player;
 
 void				ft_setpos(t_player *player);
@@ -54,7 +64,8 @@ void				ft_parse_figpX(t_piece *piece);
 void				ft_parse_figpY(t_piece *piece);
 void				ft_start(t_player *player);
 void				ft_setpiece(t_player *player, int x, int y);
-void				ft_frst_check(t_player *player, int x, int y, int *con);
-void				ft_find_way(t_player *player);
+int					ft_check_player(char *piece, t_player *player);
+void				ft_find_way(t_player *player, int size);
+int					ft_valid(t_player *player, int x, int y);
 
 #endif

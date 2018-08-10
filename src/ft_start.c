@@ -82,11 +82,9 @@ int			ft_fill_loop(t_player *player)
 		if (!ft_strncmp(tetr, "Plateau ", 8))
 		{
 			ft_readfild(tetr, &player->fild, 8);
+			ft_find_way(player, 0);
 			if (!(player->fild.init))
-			{
 				ft_setpos(player);
-				ft_find_way(player);
-			}
 		}
 		if (!ft_strncmp(tetr, "Piece ", 6))
 		{
@@ -108,12 +106,10 @@ int			main(void)
 	while (1)
 	{
 		if (get_next_line(0, &piece) && piece &&
-			!ft_strncmp(piece, "$$$ exec p", 9) &&
-			(piece[10] == '1' || piece[10] == '2'))
+			!ft_strncmp(piece, "launched ", 8))
 		{
-			player.my = (piece[10] == '1') ? 'O' : 'X';
-			player.en = (piece[10] == '1') ? 'X' : 'O';
-			break ;
+			if (ft_check_player(piece, &player))
+				break ;
 		}
 	}
 	ft_strdel(&piece);

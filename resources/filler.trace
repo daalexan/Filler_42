@@ -1,3 +1,6 @@
-seed = 7406
+seed = 4275
 O: error on input
-../daalexan.filler: Segfault at 1
+my/daalexan.filler: Segfault at 0
+players/abanlin.filler won
+Score:
+0AGAINST139
