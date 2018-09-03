@@ -10,128 +10,81 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_filler.h"
+#include "filler.h"
 
-void	ft_setpos(t_player *player)
+void	free_mem_fild(t_fild *fild, int move)
 {
-	int	i;
-	int	j;
+	int		i;
+	char	*str;
 
+	if (!fild->data)
+		return ;
 	i = 0;
-	while (i < player->fild.size.x)
+	while (i < fild->size.x)
 	{
-		j = 0;
-		while (player->fild.data[i][j] != '\0')
-		{
-			if (player->fild.data[i][j] == player->my)
-			{
-				player->fild.startP[0] = i;
-				player->fild.startP[1] = j;
-			}
-			if (player->fild.data[i][j] == player->en)
-			{
-				player->fild.startE[0] = i;
-				player->fild.startE[1] = j;
-			}
-			j++;
-		}
+		str = fild->data[i] - move;
+		ft_strdel(&str);
 		i++;
 	}
-	player->fild.init = 1;
+	ft_memdel((void **)&fild->data);
 }
 
-void	ft_parse_figwhX(t_piece *piece)
+void	free_mem_piece(t_piece *piece, int move)
 {
-	int	i;
-	int	j;
+	int		i;
+	char	*str;
 
-	i = piece->size.y;
-	piece->figwh[0] = -1;
-	while (--i > 0)
+	if (!piece->data)
+		return ;
+	i = 0;
+	while (i < piece->size.x)
 	{
-		j = piece->size.x;
-		while (--j >= 0)
-		{
-			if (piece->data[j][i] == '*')
-			{
-				piece->figwh[0] = i;
-				break ;
-			}
-		}
-		if (piece->figwh[0] != -1)
-			break ;
+		str = piece->data[i] - move;
+		ft_strdel(&str);
+		i++;
 	}
+	ft_memdel((void **)&piece->data);
 }
 
-void	ft_parse_figwhY(t_piece *piece)
+void	check_curr_pos(t_player *p)
 {
-	int	i;
-	int j;
-
-	i = piece->size.x;
-	piece->figwh[1] = -1;
-	while (--i > 0)
+	if ((p->fild.starte.x - p->fild.startp.x) < 0)
 	{
-		j = piece->size.y;
-		while (j >= 0)
-		{
-			if (piece->data[i][j] == '*')
-			{
-				piece->figwh[1] = i;
-				break ;
-			}
-			j--;
-		}
-		if (piece->figwh[1] != -1)
-			break ; 
+		p->current.x = 0;
 	}
+	else
+	{
+		p->current.x = (p->fild.size.x - 1);
+	}
+	if ((p->fild.starte.y - p->fild.startp.y) < 0)
+	{
+		p->current.y = 0;
+	}
+	else
+	{
+		p->current.y = (p->fild.size.y - 1);
+	}
+	p->fild.len = p->fild.size.x * p->fild.size.y;
+	p->fild.init = 1;
 }
 
-void	ft_parse_figpY(t_piece *piece)
+void	ft_setpos(t_player *p)
 {
-	int	i;
-	int	j;
+	t_point	point;
 
-	i = -1;
-	piece->figp[1] = -1;
-	while (++i < piece->size.y)
+	point.x = 0;
+	while (point.x < p->fild.size.x)
 	{
-		j = -1;
-		while (++j < piece->size.x)
+		point.y = 0;
+		while (point.y < p->fild.size.y)
 		{
-			if (piece->data[j][i] == '*')
-			{
-				piece->figp[1] = i;
-				break ;
-			}
+			if (p->fild.data[point.x][point.y] == p->my)
+				p->fild.startp = point;
+			if (p->fild.data[point.x][point.y] == p->en)
+				p->fild.starte = point;
+			point.y++;
 		}
-		if (piece->figp[1] != -1)
-			break ; 
+		point.x++;
 	}
-	ft_parse_figwhX(piece);
-}
-
-void	ft_parse_figpX(t_piece *piece)
-{
-	int	i;
-	int	j;
-
-	i = -1;
-	piece->figp[0] = -1;
-	while (++i < piece->size.x)
-	{
-		j = 0;
-		while (piece->data[i][j] != '\0')
-		{
-			if (piece->data[i][j] == '*')
-			{
-				piece->figp[0] = i;
-				break ;
-			}
-			j++;
-		}
-		if (piece->figp[0] != -1)
-			break ; 
-	}
-	ft_parse_figwhY(piece);
+	check_curr_pos(p);
 }

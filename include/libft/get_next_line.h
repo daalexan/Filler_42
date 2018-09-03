@@ -15,7 +15,7 @@
 
 # include "libft.h"
 # include <unistd.h>
-# define BUFF_SIZE 100
+# define BUFF_SIZE 1
 # define END 0
 # define OK 1
 # define ERROR -1

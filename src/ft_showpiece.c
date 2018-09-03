@@ -10,101 +10,101 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_filler.h"
+#include "filler.h"
 
-void	ft_find_way(t_player *player, int size)
+int		ft_frst_check(t_player *p, int x, int y)
 {
-	player->move.size = size;
-	player->move.x = player->fild.startP[0];
-	player->move.y = player->fild.startP[1];
-	player->move.x1 = player->fild.startP[0];
-	player->move.y1 = player->fild.startP[1];
-	player->move.x -= player->move.size;
-	player->move.y -= player->move.size;
-	player->move.x1 += player->move.size;
-	player->move.y1 += player->move.size;
-}
-
-int	ft_check_player(char *piece, t_player *player)
-{
-	char	*str;
-
-	str = "daalexan";
-	while (*piece)
+	if (x + p->piece.size.x > p->fild.size.x ||
+		y + p->piece.size.y > p->fild.size.y)
 	{
-		if (*piece == *str)
-		{
-			while (*piece++ == *str++)
-			{
-				if (*str == '\0')
-				{
-					if (get_next_line(0, &piece) && piece && 
-					!ft_strncmp(piece, "$$$ exec p", 9) &&
-					(piece[10] == '1' || piece[10] == '2'))
-					{
-						player->my = (piece[10] == '1') ? 'O' : 'X';
-						player->en = (piece[10] == '1') ? 'X' : 'O';
-						return (1);		
-					}
-				}
-			}
-		}
-		piece++;
+		return (1);
 	}
 	return (0);
 }
 
-void	ft_frst_check(t_player *p, int x, int y, int i, int j)
+int		check_pos(t_player p, int x, int y)
 {
-	if (x - p->piece.figp[0] < 0)
-		p->stop++;
-	if (y - p->piece.figp[1] < 0)
-		p->stop++;
-	if ((x >= p->fild.size.x || y >= p->fild.size.y) &&
-		p->piece.data[i][j] == '*')
-			p->stop++;
+	if (x >= 0 && y >= 0 && x < p.fild.size.x && y < p.fild.size.y)
+		return (1);
+	else
+		return (0);
 }
 
-int	ft_valid(t_player *p, int x, int start)
+int		ft_valid(t_player *p, int x, int y)
+{
+	t_point	point;
+
+	if (ft_frst_check(p, x, y))
+		return (1);
+	p->stop = 0;
+	point.x = 0;
+	while (point.x < p->piece.size.x)
+	{
+		point.y = 0;
+		while (point.y < p->piece.size.y)
+		{
+			if (p->piece.data[point.x][point.y] == '*' &&
+				p->fild.data[x + point.x][y + point.y] == p->my &&
+				++(p->stop) > 1)
+				return (1);
+			if (p->piece.data[point.x][point.y] == '*' &&
+				p->fild.data[x + point.x][y + point.y] == p->en)
+				return (1);
+			point.y++;
+		}
+		point.x++;
+	}
+	return (p->stop < 1 ? 1 : 0);
+}
+
+int		try_pos(t_player *p, int x, int y, t_point *res)
 {
 	int	i;
 	int	j;
-	int y;
 
-	p->stop = 0;
-	y = start;
-	i = p->piece.figp[0] - 1;
-	while (++i < p->piece.size.x && p->stop <= 1)
+	i = 0;
+	while (i < p->piece.size.x)
 	{
-		j = p->piece.figp[1] - 1;
-		y = start;
-		while (++j < p->piece.size.y)
+		j = 0;
+		while (j < p->piece.size.y)
 		{
-			printf("(%c (%d,%d), %c (%d,%d))\n", p->fild.data[x][y], x, y, p->piece.data[i][j], i, j);
-			ft_frst_check(p, x, y, i, j);
-			if ((p->fild.data[x][y] == 'X' || p->fild.data[x][y] == 'x' ||
-				p->fild.data[x][y] == 'O' || p->fild.data[x][y] == 'o') &&
-				(p->piece.data[i][j] == '*'))
-					p->stop++;
-			y++;
+			res->x = x - i;
+			res->y = y - j;
+			if (p->piece.data[i][j] == '*' && check_pos(*p, res->x, res->y) &&
+				!ft_valid(p, res->x, res->y))
+			{
+				return (1);
+			}
+			j++;
 		}
-		x++;
+		i++;
 	}
-	return ((p->stop == 1) ? (1) : (0));
+	return (0);
 }
 
-void	ft_setpiece(t_player *player, int x, int y)
+void	ft_setpiece(t_player *p)
 {
-	if (!ft_valid(player, x, y))
+	t_point	finish;
+
+	finish = find_pos(p);
+	if (!check_pos(*p, finish.x, finish.y))
 	{
+		if (p->points_p)
+			free(p->points_p);
+		if (p->points_e)
+			free(p->points_e);
 		ft_putstr("0 0\n");
 		exit(0);
 	}
-	ft_putnbr(x - player->piece.figp[0]);
-	ft_putchar(' ');
-	ft_putnbr(y - player->piece.figp[1]);
-	ft_putchar('\n');
-	free(player->piece.data);
-	free(player->fild.data);
-	printf("I'm DONE!!!\n");
+	else
+	{
+		ft_putnbr(finish.x);
+		ft_putchar(' ');
+		ft_putnbr(finish.y);
+		ft_putchar('\n');
+		if (p->points_p)
+			free(p->points_p);
+		if (p->points_e)
+			free(p->points_e);
+	}
 }

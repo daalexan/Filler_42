@@ -6,7 +6,7 @@
 #    By: daalexan <marvin@42.fr>                    +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/07/25 16:17:48 by daalexan          #+#    #+#              #
-#    Updated: 2018/07/25 16:20:22 by daalexan         ###   ########.fr        #
+#    Updated: 2018/08/16 11:06:29 by daalexan         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,7 +25,8 @@ LIB_FILES = ./include/libft/
 FILLER_FILES =  src/ft_start.c \
 				src/ft_setinfo.c \
 				src/ft_game.c \
-				src/ft_showpiece.c
+				src/ft_showpiece.c \
+				src/ft_move.c
 				
 OBJ = $(FILLER_FILES:.c=.o)
 

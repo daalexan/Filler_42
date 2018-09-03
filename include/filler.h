@@ -1,30 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_filler.h                                        :+:      :+:    :+:   */
+/*   filler.h                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: daalexan <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/07/25 16:17:30 by daalexan          #+#    #+#             */
-/*   Updated: 2018/07/25 16:17:33 by daalexan         ###   ########.fr       */
+/*   Created: 2018/08/16 11:32:55 by daalexan          #+#    #+#             */
+/*   Updated: 2018/08/16 11:33:09 by daalexan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef FT_FILLER_H
-# define FT_FILLER_H
+#ifndef FILLER_H
+# define FILLER_H
 
 # include "libft.h"
-# include <stdio.h>
 # include <stdlib.h>
-
-typedef	struct		s_move
-{
-	int				size;
-	int				x;
-	int				y;
-	int				x1;
-	int				y1;
-}					t_move;
+# define FT_MAX(x, y) ((x >= y) ? (x) : (y))
+# define FT_MIN(x, y) ((x <= y) ? (x) : (y))
 
 typedef	struct		s_point
 {
@@ -32,20 +24,19 @@ typedef	struct		s_point
 	int				y;
 }					t_point;
 
-typedef struct 		s_fild	
+typedef struct		s_fild
 {
 	short			init;
 	t_point			size;
-	int				startP[2];
-	int				startE[2];
+	int				len;
+	t_point			startp;
+	t_point			starte;
 	char			**data;
 }					t_fild;
 
-typedef struct		s_piece 
+typedef struct		s_piece
 {
 	t_point			size;
-	int				figp[2];
-	int				figwh[2];
 	char			**data;
 }					t_piece;
 
@@ -56,16 +47,23 @@ typedef struct		s_player
 	char			en;
 	t_fild			fild;
 	t_piece			piece;
-	t_move			move;
+	t_point			current;
+	t_point			*points_p;
+	int				player_c;
+	t_point			*points_e;
+	int				enemy_c;
 }					t_player;
 
 void				ft_setpos(t_player *player);
-void				ft_parse_figpX(t_piece *piece);
-void				ft_parse_figpY(t_piece *piece);
-void				ft_start(t_player *player);
-void				ft_setpiece(t_player *player, int x, int y);
-int					ft_check_player(char *piece, t_player *player);
-void				ft_find_way(t_player *player, int size);
+t_point				find_pos(t_player *p);
+void				ft_setpiece(t_player *player);
 int					ft_valid(t_player *player, int x, int y);
+int					try_pos(t_player *p, int x, int y, t_point *res);
+void				free_mem_piece(t_piece *piece, int move);
+void				free_mem_fild(t_fild *fild, int move);
+t_point				ft_move_right_down(t_player *p);
+t_point				ft_move_left_down(t_player *p);
+t_point				ft_move_right_up(t_player *p);
+t_point				ft_move_left_up(t_player *p);
 
 #endif

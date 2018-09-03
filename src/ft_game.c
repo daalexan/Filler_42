@@ -10,78 +10,89 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "ft_filler.h"
+#include "filler.h"
 
-int		loopy(t_player *p, int p1, int p2, int on)
+int		check_len(t_point p1, t_point p2)
 {
-	printf("loopY p1 = %d p2 = %d on = %d\n", p1, p2, on);
-	while (p1 <= p2)
+	int	resy;
+	int	resx;
+
+	resx = FT_MAX(p1.x, p2.x) - FT_MIN(p1.x, p2.x);
+	resy = FT_MAX(p1.y, p2.y) - FT_MIN(p1.y, p2.y);
+	return (resx + resy);
+}
+
+void	create_points(t_player *p, int size)
+{
+	t_point	point;
+
+	p->player_c = 0;
+	p->enemy_c = 0;
+	point.x = 0;
+	if (!(p->points_p = (t_point*)malloc(size * sizeof(t_point))))
+		exit(0);
+	if (!(p->points_e = (t_point*)malloc(size * sizeof(t_point))))
+		exit(0);
+	ft_bzero(p->points_p, size * sizeof(t_point));
+	ft_bzero(p->points_e, size * sizeof(t_point));
+	while (point.x < p->fild.size.x)
 	{
-		printf("points (%d)\n", p1);
-		if (ft_valid(p, on, p1))
+		point.y = 0;
+		while (point.y < p->fild.size.y)
 		{
-			p->move.x = on;
-			p->move.y = p1;
-			return (1);
+			if (p->fild.data[point.x][point.y] == p->my)
+				p->points_p[p->player_c++] = point;
+			else if (p->fild.data[point.x][point.y] == p->en)
+				p->points_e[p->enemy_c++] = point;
+			point.y++;
 		}
-		p1++;
+		point.x++;
 	}
-	return (0);
 }
 
-int		loopx(t_player *p, int p1, int p2, int on)
+t_point	search_side(t_player *p)
 {
-	printf("loopX p1 = %d p2 = %d on = %d\n", p1, p2, on);
-	while (p1 <= p2)
+	t_point	end;
+
+	end.x = 0;
+	end.y = 0;
+	if (p->current.x == 0 && p->current.y == 0)
+		return (ft_move_right_down(p));
+	else if (p->current.x == 0 && p->current.y != 0)
+		return (ft_move_left_down(p));
+	else if (p->current.x != 0 && p->current.y == 0)
+		return (ft_move_right_up(p));
+	else if (p->current.x != 0 && p->current.y != 0)
+		return (ft_move_left_up(p));
+	else
+		return (end);
+}
+
+t_point	find_pos(t_player *p)
+{
+	int		i;
+	int		j;
+	t_point	res;
+	t_point	point;
+	int		lenght;
+
+	lenght = p->fild.len;
+	create_points(p, lenght);
+	i = 0;
+	while (i < p->player_c)
 	{
-		printf("points (%d)\n", p1);
-		if (ft_valid(p, p1, on))
+		j = 0;
+		while (j < p->enemy_c)
 		{
-			p->move.x = p1;
-			p->move.y = on;
-			return (1);
+			if (try_pos(p, p->points_p[i].x, p->points_p[i].y, &res) &&
+				check_len(p->points_p[i], p->points_e[j]) <= lenght)
+			{
+				lenght = check_len(p->points_p[i], p->points_e[j]);
+				point = res;
+			}
+			j++;
 		}
-		p1++;
+		i++;
 	}
-	return (0);
-}
-
-void	try_pos(t_player *p, int *x, int *y)
-{
-	while (p->move.x >= 0 && p->move.y >= 0 &&
-		p->move.x < p->fild.size.x && p->move.y < p->fild.size.y)
-	{
-		ft_find_way(p, p->move.size);
-		printf("FIRST\n");
-		if (loopy(p, p->move.y, p->move.y1, p->move.x))
-			break ;
-		printf("Second\n");
-		if (loopy(p, p->move.y, p->move.y1, p->move.x1))
-			break ;
-		printf("Third\n");
-		if (loopx(p, p->move.x, p->move.x1, p->move.y))
-			break ;
-		printf("fourth\n");
-		if (loopx(p, p->move.x, p->move.x1, p->move.y1))
-			break ;
-		printf("fifth\n");
-		p->move.size++;
-	}
-	(*x) = p->move.x;
-	(*y) = p->move.y;
-	printf("X = %d Y = %d StartX = %d StartY = %d\n", *x, *y, p->fild.startP[0], p->fild.startP[1]);
-}
-
-void	ft_start(t_player *player)
-{
-	int x;
-	int y;
-
-	x = player->fild.startP[0];
-	y = player->fild.startP[1];
-	//printf("pos1 = x=%d y=%d\n", x, y);
-	//printf("figp x = %d y = %d\n", player->piece.figp[0],player->piece.figp[1]);
-	try_pos(player, &x, &y);
-	//printf("Loop end\n");
-	ft_setpiece(player, x, y);
+	return ((lenght != p->fild.len) ? (point) : (search_side(p)));
 }
